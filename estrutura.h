@@ -22,8 +22,9 @@ void criarItem();
 void abrirBalanco();
 void deletarArquivo();
 int menuAbrirBalanco();
-void exibirBalanco();
+void exibirBalanco(char nomeBalanco[]);
 
 //Utilidades
 void limpaTela();
 void printarLinha();
+void pausar();

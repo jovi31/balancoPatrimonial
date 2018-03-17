@@ -14,15 +14,15 @@ void menuInicial(){
         printf("\n (4) Sair\n");
         printarLinha();
         printf("\n -> Escolha uma opção: ");
+        fflush(stdin);
         scanf("%d", &op);
-        getchar();
 
         switch(op){
             case 1:
                 limpaTela();
                 criarBalanco();
-                printf("\n -> Arquivo criado com sucesso!\n\n");
-                system("PAUSE");
+                printf("\n -> Arquivo criado com sucesso!\n");
+                pausar();
                 break;
             case 2:
                 abrirBalanco();
@@ -30,16 +30,16 @@ void menuInicial(){
             case 3:
                 limpaTela();
                 deletarArquivo();
-                printf("\n -> Arquivo deletado com sucesso!\n\n");
-                system("PAUSE");
+                printf("\n -> Arquivo deletado com sucesso!\n");
+                pausar();
                 break;
             case 4:
-                printf("\n -> Saindo do sistema...\n\n");
-                system("PAUSE");
+                printf("\n -> Saindo do sistema...\n");
+                pausar();
                 break;
             default:
-                printf("\n -> Opção inválida!\n\n");
-                system("PAUSE");
+                printf("\n -> Opção inválida!\n");
+                pausar();
                 break;
         }
     }while(op != 4);
@@ -50,7 +50,6 @@ void menuInicial(){
 void lerNomeBalanco(char *nome){
     printf("\n -> Digite o nome do balanco: ");
     scanf("%s", nome);
-    getchar();
 }
 
 void procurarBalanco(char *nome){
@@ -109,26 +108,43 @@ void criarItem(){
 void abrirBalanco(){
     FILE* arquivo;
     char nomeArquivo[30];
-    int op;
-
-    limpaTela();
-    printarLinha();
-    printf("\t# ABRIR BALANCO");
-    printarLinha();
-
-    lerNomeBalanco(nomeArquivo);
-
-    arquivo = fopen(nomeArquivo, "a");
+    int op, arquivoValido;
 
     do{
-        op = menuAbrirBalanco();
+        limpaTela();
+        printarLinha();
+        printf("\t# ABRIR BALANCO");
+        printarLinha();
 
+        lerNomeBalanco(nomeArquivo);
+
+        arquivo = fopen(nomeArquivo, "r");
+
+        if(arquivo == NULL){
+            arquivoValido = 0;
+        }else{
+            arquivoValido = 1;
+        }
+
+        if(arquivoValido == 0){
+            printf("\n -> Arquivo não encontrado ...\n");
+            pausar();
+        }
+
+    }while(arquivoValido == 0);
+
+
+    op = menuAbrirBalanco();
+
+    do{
         switch(op){
             case 1:
                 break;
             case 2:
+                limpaTela();
                 break;
             case 3:
+                limpaTela();
                 break;
             case 4:
                 break;
@@ -136,8 +152,6 @@ void abrirBalanco(){
                 break;
         }
     }while(op != 4);
-
-    fclose(arquivo);
 }
 
 void deletarArquivo(){
@@ -166,13 +180,18 @@ int menuAbrirBalanco(){
     printarLinha();
     printf("\n -> Escolha uma opção: ");
     scanf("%d", &op);
-    getchar();
+    fflush(stdin);
 
     return op;
 }
 
-void exibirBalanco(){
+void exibirBalanco(char nomeBalanco[]){
+    FILE *arquivo = fopen(nomeBalanco, "a");
 
+    limpaTela();
+
+
+    fclose(arquivo);
 }
 
 //Utilidades
@@ -183,4 +202,12 @@ void limpaTela(){
 
 void printarLinha(){
     printf("\n+--------------------------------------------------+\n");
+}
+
+void pausar(){
+    int aux;
+    printarLinha();
+    printf("-> Digite [ENTER] para continuar ...");
+    printarLinha();
+    system("read aux");
 }
