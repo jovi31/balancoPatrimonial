@@ -1,0 +1,18 @@
+AC Caixa 5000.00
+AC Estoque 7000.00 
+AC Disponível 3000.00 
+AC Contas a Receber 10000.00
+ANC Veículos 30000.00
+ANC Imóveis 70000.00
+ANC Direitos Autorais 10000.00
+ANC Participação 5000.00
+PC Contas a Pagar 6000.00
+PC Fornecedores 4000.00
+PC Impostos a Pagar 2000.00
+PNC Empréstimos de Longo Prazo 50000.00
+PL Capital Social 28000.00
+PL Lucros Acumulados 40000.00
+PL Prejuízos Acumulados 10000.00
+
+TOTAL ATIVO = 140000.00
+TOTAL PASSIVO + PATRIMONIO LIQUIDO = 140000.00
