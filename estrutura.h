@@ -9,6 +9,7 @@ typedef struct{
 void lerNomeBalanco(char *nome);
 void procurarBalanco(char *nome);
 Item lerItem();
+void exibirItem(Item umItem);
 void lerNomeItem(char *nome);
 int procurarItem(Item umItem);
 void inserirItemNoArquivo(Item umItem);
@@ -18,7 +19,7 @@ void alterarBalanco();
 
 //Menus
 void menuInicial();
-void criarItem();
+void criarItem(char *nomeArquivo);
 void abrirBalanco();
 void deletarArquivo();
 int menuAbrirBalanco();
