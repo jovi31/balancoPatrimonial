@@ -1,6 +1,8 @@
 #include<stdio.h>
 #include "estrutura.h"
 
+// Menus
+
 void menuInicial(){
     int op;
 
@@ -46,6 +48,38 @@ void menuInicial(){
     }while(op != 4);
 }
 
+int menuAbrirBalanco(){
+    int op;
+
+    limpaTela();
+    printarLinha();
+    printf("\t# EDITAR BALANÇO");
+    printarLinha();
+    printf("\n (1) Inserir item");
+    printf("\n (2) Alterar item");
+    printf("\n (3) Deletar item");
+    printf("\n (4) Exibir balanco");
+    printf("\n (5) Sair\n");
+    printarLinha();
+    printf("\n -> Escolha uma opção: ");
+    scanf("%d", &op);
+    getchar();
+
+    return op;
+}
+
+void exibirTipos(){
+    printarLinha();
+    printf("\t# TIPOS DE ITENS NO BALANÇO");
+    printarLinha();
+    printf("\n\tAC - Ativo Circulante");
+    printf("\n\tANC - Ativo Não Circulante");
+    printf("\n\tPC - Passivo Circulante");
+    printf("\n\tPNC - Passivo Não Circulante");
+    printf("\n\tPL - Patrimônio Líquido\n");
+    printarLinha();
+}
+
 //Funções e Procedimentos
 
 void lerNomeBalanco(char *nome){
@@ -54,66 +88,67 @@ void lerNomeBalanco(char *nome){
     getchar();
 }
 
-void procurarBalanco(char *nome){
-
-}
-
 Item lerItem(){
     Item umItem;
 
-    printf("\n - > Digite o nome: ");
+    printf("\n -> Digite o nome: ");
     scanf("%[^\n]s", umItem.nome);
     getchar();
-    printf("\n - > Digite o tipo: ");
+    exibirTipos();
+    printf("\n -> Digite o tipo: ");
     scanf("%s", umItem.tipo);
     getchar();
-    printf("\n - > Digite o valor: ");
+    printf("\n -> Digite o valor: ");
     scanf("%f", &umItem.valor);
     getchar();
-    umItem.ehVisivel = 1;
+    printf("\n -> Digite a visibilidade: ");
+    scanf("%d", &umItem.ehVisivel);
+    getchar();
+    //umItem.ehVisivel = 1;
 
     return umItem;
+}
+
+void exibirItem(Item umItem){
+    printf("\n Nome: %s", umItem.nome);
+    printf("\n Tipo: %s", umItem.tipo);
+    printf("\n Valor: %.2f\n\n", umItem.valor);
 }
 
 void lerNomeItem(char *nome){
 
 }
 
-int procurarItem(Item umItem){
+int selecionarItem(char nomeBalanco[]){
+    FILE *arquivo = fopen(nomeBalanco, "rb");
+    Item umItem;
+    int contadorExibido = 0, contadorReal = 0, posicao[255], op;
 
-}
-
-void inserirItemNoArquivo(Item umItem){
-
-}
-
-void modificarItemNoArquivo(Item umItem){
-
-}
-
-void excluirItem(){
-
-}
-
-void alterarBalanco(){
-
-}
-
-//Principais modulos
-
-void criarBalanco(){
-    FILE* arquivo;
-    char nomeArquivo[30];
+    limpaTela();
 
     printarLinha();
-    printf("\t# CRIAR BALANCO");
+    printf("\t# ITENS DESSE BALANÇO");
     printarLinha();
 
-    lerNomeBalanco(nomeArquivo);
+    fread(&umItem, sizeof(Item), 1, arquivo);
 
-    arquivo = fopen(nomeArquivo, "w");
+    while(!feof(arquivo)){
+        contadorReal++;
+        if(umItem.ehVisivel == 1){
+            printf("\n (%d) %s [%s]", contadorExibido, umItem.nome, umItem.tipo);
+            posicao[contadorExibido] = contadorReal;
+            contadorExibido++;
+        }
+        fread(&umItem, sizeof(Item), 1, arquivo);
+    }
 
     fclose(arquivo);
+
+    printarLinha();
+    printf("\n -> Digite o número do item: ");
+    scanf("%d", &op);
+
+    return posicao[op] - 1;
 }
 
 void criarItem(char *nomeArquivo){
@@ -129,6 +164,54 @@ void criarItem(char *nomeArquivo){
     umItem = lerItem();
 
     fwrite(&umItem, sizeof(Item), 1, arquivo);
+
+    fclose(arquivo);
+}
+
+void modificarItemNoArquivo(char nomeBalanco[]){
+    FILE *arquivo = fopen(nomeBalanco, "rb+");
+    Item umItem;
+    int posicao = selecionarItem(nomeBalanco);
+
+    fseek(arquivo, sizeof(Item) * posicao, SEEK_SET);
+
+    fread(&umItem, sizeof(Item), 1, arquivo);
+
+    printf("\n-> Nome do item: %s", umItem.nome);
+
+    getchar();
+    pausar();
+
+    fclose(arquivo);
+}
+
+void excluirItem(char nomeBalanco[]){
+    Item umItem;
+    FILE *arquivo = fopen(nomeBalanco, "rb+");
+    int pos = selecionarItem(nomeBalanco);
+
+    fseek(arquivo, sizeof(Item) * pos, SEEK_SET);
+    fread(&umItem, sizeof(Item), 1, arquivo);
+    fseek(arquivo, sizeof(Item) * pos, SEEK_SET);
+    umItem.ehVisivel = 0;
+    fwrite(&umItem, sizeof(Item), 1, arquivo);
+    fseek(arquivo, 0, SEEK_END);
+    fclose(arquivo);
+}
+
+//Principais modulos
+
+void criarBalanco(){
+    FILE* arquivo;
+    char nomeArquivo[30];
+
+    printarLinha();
+    printf("\t# CRIAR BALANCO");
+    printarLinha();
+
+    lerNomeBalanco(nomeArquivo);
+
+    arquivo = fopen(nomeArquivo, "w");
 
     fclose(arquivo);
 }
@@ -161,17 +244,19 @@ void abrirBalanco(){
 
     }while(arquivoValido == 0);
 
+    fclose(arquivo);
+
     do{
         op = menuAbrirBalanco();
         switch(op){
             case 1:
-                criarItem(nomeArquivo);
+                inserirItemM(nomeArquivo);
                 break;
             case 2:
-                limpaTela();
+                alterarItemM(nomeArquivo);
                 break;
             case 3:
-                limpaTela();
+                removerItemM(nomeArquivo);
                 break;
             case 4:
                 exibirBalanco(nomeArquivo);
@@ -196,33 +281,10 @@ void deletarArquivo(){
     remove(nomeArquivo);
 }
 
-int menuAbrirBalanco(){
-    int op;
-
-    limpaTela();
-    printarLinha();
-    printf("\t# EDITAR BALANÇO");
-    printarLinha();
-    printf("\n (1) Inserir item");
-    printf("\n (2) Alterar item");
-    printf("\n (3) Deletar item");
-    printf("\n (4) Exibir balanco");
-    printf("\n (5) Sair\n");
-    printarLinha();
-    printf("\n -> Escolha uma opção: ");
-    scanf("%d", &op);
-    getchar();
-
-    return op;
-}
-
-void exibirItem(Item umItem){
-    printf("\n Nome: %s", umItem.nome);
-    printf("\n Tipo: %s", umItem.tipo);
-    printf("\n Valor: %.2f\n\n", umItem.valor);
-}
-
 void exibirBalanco(char nomeBalanco[]){
+    float totAtivo = 0;
+    float totPassivo = 0;
+    float totPatrimonio = 0;
     int numero = 0;
     Item umItem;
     FILE *arquivo = fopen(nomeBalanco, "rb");
@@ -237,15 +299,71 @@ void exibirBalanco(char nomeBalanco[]){
 
     fread(&umItem, sizeof(Item), 1, arquivo);
     while(!feof(arquivo)){
-        printf("ITEM %d\n", numero + 1);
-        exibirItem(umItem);
+        if(umItem.ehVisivel){
+            if(ehAtivo(umItem.tipo)){
+                totAtivo += umItem.valor;
+            }
+            if(ehPassivo(umItem.tipo)){
+                totPassivo += umItem.valor;
+            }
+            if(ehPatrimonio(umItem.tipo)){
+                totPatrimonio += umItem.valor;
+            }
+            printf("ITEM %d\n", numero + 1);
+            exibirItem(umItem);
+            numero++;
+        }
         fread(&umItem, sizeof(Item), 1, arquivo);
-        numero++;
     }
+
+    printarLinha();
+    printf(" Total Ativo: %.2f\n", totAtivo);
+    printf(" Total Passivo: %.2f\n", totPassivo);
+    printf(" Patrimonio Líquido: %.2f\n", totPatrimonio);
+    printf(" PL + Passivo = %.2f\n", totPassivo + totPatrimonio);
+    printarLinha();
 
     pausar();
 
     fclose(arquivo);
+}
+
+void inserirItemM(char nomeBalanco[]){
+    criarItem(nomeBalanco);
+    printarLinha();
+    pausar();
+}
+
+void alterarItemM(char nomeBalanco[]){
+    modificarItemNoArquivo(nomeBalanco);
+}
+
+void removerItemM(char nomeBalanco[]){
+    excluirItem(nomeBalanco);
+}
+
+int ehAtivo(char *tipo){
+    if(!strcmp(tipo, "AC") || !strcmp(tipo, "ANC")){
+        return 1;
+    }else{
+        return 0;
+    }
+}
+
+int ehPassivo(char *tipo){
+    if(!strcmp(tipo, "PC") || !strcmp(tipo, "PNC")){
+        return 1;
+    }else{
+        return 0;
+    }
+}
+
+int ehPatrimonio(char *tipo){
+    if(!strcmp(tipo, "PL")){
+        return 1;
+    }else{
+        return 0;
+    }
 }
 
 //Utilidades
@@ -259,5 +377,8 @@ void printarLinha(){
 }
 
 void pausar(){
-    system("PAUSE");
+    int aux;
+    printf("\n -> Digite [ENTER] para continuar ...\n");
+    printarLinha();
+    aux = getchar();
 }

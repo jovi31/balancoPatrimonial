@@ -5,27 +5,38 @@ typedef struct{
     int ehVisivel;
 }Item;
 
+//Menus
+
+void menuInicial();
+int menuAbrirBalanco();
+void exibirTipos();
+
 //Funções e Procedimentos
+
 void lerNomeBalanco(char *nome);
-void procurarBalanco(char *nome);
 Item lerItem();
 void exibirItem(Item umItem);
 void lerNomeItem(char *nome);
-int procurarItem(Item umItem);
-void inserirItemNoArquivo(Item umItem);
-void modificarItemNoArquivo(Item umItem);
-void excluirItem();
-void alterarBalanco();
-
-//Menus
-void menuInicial();
+int selecionarItem(char nomeBalanco[]);          // FUNCAO NOVA
 void criarItem(char *nomeArquivo);
+void modificarItemNoArquivo(char nomeBalanco[]);
+void excluirItem(char nomeBalanco[]);
+int ehAtivo(char *tipo);
+int ehPassivo(char *tipo);
+int ehPatrimonio(char *tipo);
+
+// Principais módulos
+
+void criarBalanco();
 void abrirBalanco();
 void deletarArquivo();
-int menuAbrirBalanco();
+void inserirItemM(char nomeBalanco[]);
+void alterarItemM(char nomeBalanco[]);
+void removerItemM(char nomeBalanco[]);
 void exibirBalanco(char nomeBalanco[]);
 
 //Utilidades
+
 void limpaTela();
 void printarLinha();
 void pausar();
